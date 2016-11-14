@@ -1,8 +1,7 @@
 <template>
     <div id="streams">
-
         <!-- Form -->
-        <div v-if="mode=='form'">
+        <div v-if="mode=='FORM'">
             <div class="stream_name">
                 <label for="stream_name">Name</label>
                 <input v-model="stream.name" type="input" :value="name" id="stream_name"/>
@@ -17,9 +16,8 @@
                 <button @click="cancel">Cancel</button>
             </div>
         </div>
-
-        <!-- -->
-        <div v-if="mode=='list'">
+        <!-- List -->
+        <div v-if="mode=='LIST'">
             <button @click="form(-1)">Add</button>
             <table v-if="streams.length>0" class="stream" border="1">
                 <tr v-for="(stream, index) in streams">
@@ -41,7 +39,7 @@ export default {
   name: 'streams',
   data () {
     return {
-      mode: 'list',
+      mode: 'LIST',
       index: -1,
       stream: {},
       streams: JSON.parse(localStorage.getItem("streams")),
@@ -53,23 +51,23 @@ export default {
     insert: function() {
         this.streams.push(this.stream)
         this.stream = {}
-        this.mode = 'list'
+        this.mode = 'LIST'
     },
     cancel: function() {
         this.stream = {}
-        this.mode = 'list'
+        this.mode = 'LIST'
     },
     update: function() {
         this.streams[this.index] = this.stream
         this.stream = {}
-        this.mode = 'list'
+        this.mode = 'LIST'
     },
     form: function(index) {
         this.index = index
         if (this.streams[index] !== undefined) {
             this.stream = this.streams[index]
         }
-        this.mode = 'form'
+        this.mode = 'FORM'
     },
     remove: function(index) {
         this.streams.splice(index, 1);

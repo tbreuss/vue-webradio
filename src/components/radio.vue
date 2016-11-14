@@ -9,19 +9,20 @@
                     </option>
                 </select>
             </div>
-
             <div class="volume">
                 <label for="volume">Volume</label>
-                <input @change="setVolume" v-model="volume" type="range" min="0" max="100" :value="volume" id="volume"/>
+                <input @input="setVolume" @change="setVolume" v-model="volume" type="range" min="0" max="100"
+                       :value="volume" id="volume"/>
             </div>
-
             <div class="button">
                 <button v-if="playing" @click="stopStream">Stop</button>
                 <button v-else @click="playStream">Play</button>
             </div>
         </div>
         <div v-else>
-            <p>Bitte mindestens eine <router-link to="/streams">Stream-URL</router-link> erfassen.
+            <p>Bitte mindestens eine
+                <router-link to="/streams">Stream-URL</router-link>
+                erfassen.
             </p>
         </div>
     </div>
@@ -33,13 +34,19 @@
 
 let audio = new Audio()
 
+audio.addEventListener("loadstart", function() {
+    //console.log("load start event")
+});
 audio.addEventListener("timeupdate", function() {
-  //console.log("time updated")
+    //console.log("time update event")
 });
 
 audio.addEventListener("volumechange", function() {
-  //console.log("volume changed")
+    //console.log("volume change event")
 })
+audio.addEventListener("progress", function() {
+    //console.log("progress event")
+});
 
 export default {
   name: 'radio',
@@ -72,6 +79,7 @@ export default {
     stopStream: function(event) {
         if (audio.getAttribute('src') != '') {
             audio.pause()
+            audio.setAttribute('src', '')
             this.playing = false
             console.log('stop')
         }
