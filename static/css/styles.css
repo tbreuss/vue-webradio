@@ -26,11 +26,6 @@ td.buttons {
     white-space: nowrap;
 }
 
-img {
-    width: 200px;
-    height: 200px;
-}
-
 h1, h2 {
     font-weight: normal;
 }
@@ -47,4 +42,8 @@ li {
 
 a {
     color: #42b983;
+}
+
+#spinner {
+    display: none;
 }

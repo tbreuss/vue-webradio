@@ -19,6 +19,8 @@
         <!-- List -->
         <div v-if="mode=='LIST'">
             <button @click="form(-1)">Add</button>
+            <button @click="download">Download</button>
+            <input id="file" type="file" accept="text/csv" @change="upload">
             <table v-if="streams.length>0" class="stream" border="1">
                 <tr v-for="(stream, index) in streams">
                     <td>{{ stream.name }}</td>
@@ -71,6 +73,35 @@ export default {
     },
     remove: function(index) {
         this.streams.splice(index, 1);
+    },
+    download: function() {
+        let csv = 'data:text/csv;charset=utf-8,'
+        this.streams.forEach(function(item) {
+            csv += item.name + ';' + item.url + "\n"
+        })
+        let link = document.createElement('a')
+        link.setAttribute('href', encodeURI(csv))
+        link.setAttribute('download', 'webradio-streams.csv')
+        link.click()
+    },
+    upload: function(event) {
+        let file = event.target.files[0];
+        let reader = new FileReader()
+        var streams = this.streams
+        reader.onload = function(event) {
+            event.target.result.split("\n").forEach(function(line) {
+                let item = line.split(";")
+                if (item.length == 2) {
+                    let stream = {
+                        name: item[0],
+                        url: item[1]
+                    }
+                    streams.push(stream)
+                }
+            })
+        }
+        reader.readAsText(file)
+        event.target.value = ''
     }
   }
 }

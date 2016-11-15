@@ -25,6 +25,7 @@
                 erfassen.
             </p>
         </div>
+        <img id="spinner" src="static/img/6.gif" alt="" width="20" height="20">
     </div>
 </template>
 
@@ -34,8 +35,9 @@
 
 let audio = new Audio()
 
-audio.addEventListener("loadstart", function() {
-    //console.log("load start event")
+audio.addEventListener("playing", function() {
+    console.log("playing event")
+    document.getElementById("spinner").style.display = "none";
 });
 audio.addEventListener("timeupdate", function() {
     //console.log("time update event")
@@ -66,10 +68,9 @@ export default {
   methods: {
     playStream: function(event) {
         if (this.stream == '') {
-            console.log('please choose a stream')
             return
         }
-        console.log('play ' + this.stream)
+        document.getElementById("spinner").style.display = "inline";
         audio.setAttribute('src', this.stream)
         audio.currentTime = 0
         audio.volume = this.calculateVolume()
@@ -81,12 +82,10 @@ export default {
             audio.pause()
             audio.setAttribute('src', '')
             this.playing = false
-            console.log('stop')
         }
     },
     setVolume: function(event) {
         audio.volume = this.calculateVolume()
-        console.log('set volume to ' + this.calculateVolume());
     },
     calculateVolume: function() {
         return this.volume / 100
