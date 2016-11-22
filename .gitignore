@@ -4,4 +4,5 @@
 node_modules/
 dist/build.js
 npm-debug.log
-
+api/config/db.php
+api/docs/
