@@ -3,14 +3,16 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
+    color: #fff;
+    font-weight:bold;
 }
 
 #app {
-    width: 300px;
+    width: 320px;
     min-height: 200px;
     margin: 0 auto;
     background-color: #f3f3f3;
+    background:url(../img/bg.jpg);
 }
 
 table {
@@ -28,6 +30,7 @@ td.buttons {
 
 h1, h2 {
     font-weight: normal;
+    color: red;
 }
 
 ul {
@@ -45,5 +48,9 @@ a {
 }
 
 #spinner {
+    display: none;
+}
+
+#streams td button {
     display: none;
 }

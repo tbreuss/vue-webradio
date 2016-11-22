@@ -1,5 +1,9 @@
 <template>
     <div id="app">
+
+        <h3>Radio</h3>
+
+        <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
         <div v-if="stream">
             <div class="stream">
                 <label for="stream">Stream</label>
@@ -12,7 +16,8 @@
             <div class="volume">
                 <label for="volume">Volume</label>
                 <input @input="setVolume" @change="setVolume" v-model="volume" type="range" min="0" max="100"
-                       :value="volume" id="volume"/>
+                       :value="volume" id="volume" class="mdl-slider mdl-js-slider">
+
             </div>
             <div class="button">
                 <button v-if="playing" @click="stopStream">Stop</button>

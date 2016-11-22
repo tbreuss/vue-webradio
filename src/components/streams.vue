@@ -1,35 +1,62 @@
 <template>
     <div id="streams">
-        <!-- Form -->
-        <div v-if="mode=='FORM'">
-            <div class="stream_name">
-                <label for="stream_name">Name</label>
-                <input v-model="stream.name" type="input" :value="name" id="stream_name"/>
-            </div>
-            <div class="stream_url">
-                <label for="stream_url">URL</label>
-                <input v-model="stream.url" type="input" :value="url" id="stream_url"/>
-            </div>
-            <div class="buttons">
-                <button v-if="index < 0" @click="insert">Insert</button>
-                <button v-else @click="update">Update</button>
-                <button @click="cancel">Cancel</button>
-            </div>
-        </div>
-        <!-- List -->
-        <div v-if="mode=='LIST'">
-            <button @click="form(-1)">Add</button>
-            <button @click="download">Download</button>
-            <input id="file" type="file" accept="text/csv" @change="upload">
-            <table v-if="streams.length>0" class="stream" border="1">
-                <tr v-for="(stream, index) in streams">
-                    <td>{{ stream.name }}</td>
+
+        <h3>Streams</h3>
+
+        <input v-model="term" @keyup.enter="fetchStreams(1)" placeholder="Suche...">
+
+        <table v-if="streams.length>0" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <thead>
+                <tr>
+                    <th class="mdl-data-table__cell--non-numeric">Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="stream in streams">
+                    <td class="mdl-data-table__cell--non-numeric">{{ stream.name }}</td>
                     <td class="buttons">
-                        <button @click="form(index)">Update</button>
-                        <button @click="remove(index)">Delete</button>
+                        <div class="song-indicator" data-playback-status="playing"></div>
+                        <button :class="{ 'mdl-button-inactive': true == isPlaying(stream.id) }" @click="playStream(stream.id)"
+                                class="mdl-button mdl-js-button mdl-button--raised">Play
+                        </button>
+                        <button :class="{ 'mdl-button-inactive': false == isPlaying(stream.id) }" @click="stopStream(stream.id)"
+                                class="mdl-button mdl-js-button mdl-button--raised">Stop
+                        </button>
                     </td>
                 </tr>
-            </table>
+            </tbody>
+        </table>
+
+        <div v-if="pagination.pageCount==0 && term!=''">
+            <p>Mit dem angegebenen Suchbegriff wurden keine Streams gefunden.</p>
+            <p>Vorschläge:<br>
+                Achte darauf, dass alle Wörter richtig geschrieben sind.<br>
+                Probiere es mit anderen Suchbegriffen.<br>
+                Probiere es mit allgemeineren Suchbegriffen.
+            </p>
+        </div>
+
+        <div v-if="pagination.pageCount>0" class="pagination">
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--3-col" style="text-align:left">
+                    <div v-if="pagination.currentPage > 1">
+                        <button @click="fetchStreams(prevPage)" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            &lt; Prev
+                        </button>
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--6-col" style="text-align:center">
+                    Seite {{ pagination.currentPage }} von {{ pagination.pageCount}}
+                </div>
+                <div class="mdl-cell mdl-cell--3-col" style="text-align:right">
+                    <div v-if="pagination.currentPage < pagination.pageCount">
+                        <button @click="fetchStreams(nextPage)" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            Next &gt;
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -41,67 +68,57 @@ export default {
   name: 'streams',
   data () {
     return {
-      mode: 'LIST',
-      index: -1,
-      stream: {},
-      streams: JSON.parse(localStorage.getItem("streams")),
+      pagination: {
+        currentPage: 1,
+        pageCount: 0,
+        perPage: 20,
+        totalCount: 0
+      },
+      streams: [],
+      term: ''
     }
   },
   created: function() {
+    this.fetchStreams(1)
+  },
+  computed: {
+    selected: function() {
+        return this.$store.state.stream
+    },
+    nextPage: function() {
+        return this.pagination.currentPage + 1
+    },
+    prevPage: function() {
+        return this.pagination.currentPage - 1
+    }
   },
   methods: {
-    insert: function() {
-        this.streams.push(this.stream)
-        this.stream = {}
-        this.mode = 'LIST'
+    isPlaying: function(id) {
+        return (this.selected.id == id) && this.selected.isPlaying
     },
-    cancel: function() {
-        this.stream = {}
-        this.mode = 'LIST'
-    },
-    update: function() {
-        this.streams[this.index] = this.stream
-        this.stream = {}
-        this.mode = 'LIST'
-    },
-    form: function(index) {
-        this.index = index
-        if (this.streams[index] !== undefined) {
-            this.stream = this.streams[index]
+    fetchStreams: function(page) {
+        let url = 'streams';
+        let data = {
+            term: this.term,
+            page: page
         }
-        this.mode = 'FORM'
-    },
-    remove: function(index) {
-        this.streams.splice(index, 1);
-    },
-    download: function() {
-        let csv = 'data:text/csv;charset=utf-8,'
-        this.streams.forEach(function(item) {
-            csv += item.name + ';' + item.url + "\n"
+        this.$http.get(url, { params: data }).then(function (streams) {
+            this.streams = streams.body
+            this.pagination = {
+                currentPage: parseInt(streams.headers.get('X-Pagination-Current-Page')),
+                pageCount: parseInt(streams.headers.get('X-Pagination-Page-Count')),
+                perPage: parseInt(streams.headers.get('X-Pagination-Per-Page')),
+                totalCount: parseInt(streams.headers.get('X-Pagination-Total-Count'))
+            }
         })
-        let link = document.createElement('a')
-        link.setAttribute('href', encodeURI(csv))
-        link.setAttribute('download', 'webradio-streams.csv')
-        link.click()
     },
-    upload: function(event) {
-        let file = event.target.files[0];
-        let reader = new FileReader()
-        var streams = this.streams
-        reader.onload = function(event) {
-            event.target.result.split("\n").forEach(function(line) {
-                let item = line.split(";")
-                if (item.length == 2) {
-                    let stream = {
-                        name: item[0],
-                        url: item[1]
-                    }
-                    streams.push(stream)
-                }
-            })
-        }
-        reader.readAsText(file)
-        event.target.value = ''
+    playStream: function(id) {
+        this.$http.get('streams/' + id).then(function(response) {
+            this.eventHub.$emit('player.play', response.body)
+        })
+    },
+    stopStream: function(id) {
+        this.eventHub.$emit('player.stop')
     }
   }
 }

@@ -3,10 +3,77 @@
   <head>
     <meta charset="utf-8">
     <title>dev.vue-jazzradio</title>
-    <link rel="stylesheet" href="static/css/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
+    <style>
+      body {
+      }
+      #app {
+
+      }
+      .mdl-layout__content {
+        /*margin-bottom:88px;*/
+        margin-bottom: 128px;
+      }
+      .mdl-data-table {
+        width: 100%;
+      }
+      .mdl-mini-footer {
+        text-align: center;
+        color: white;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        z-index: 1;
+        padding:0;
+      }
+      #streams .mdl-button-inactive {
+        display: none;
+      }
+
+      /*
+      .song-indicator {
+         left: 0;
+         margin-left: 5px;
+       }
+      .song-indicator {
+        display:inline-block;
+        margin: 8px 8px 8px 0;
+        position: absolute;
+        width: 48px!important;
+        height: 48px!important;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: inherit;
+        background-size: 40px 40px;
+        background-image: url(https://play-music.gstatic.com/fe/0e827333a1c544619f9618797bfb876c/ani_equalizer_black.gif);
+        left: 0;
+        top: 0;
+        transform: translateZ(0);
+      }
+      .material .song-row .hover-button[data-id="play"] {
+        background: no-repeat url(sprites.png) -1186px -42px;
+        width: 48px;
+        height: 48px;
+        background-color: rgba(0, 0, 0, .8);
+        position: absolute;
+        top: 8px;
+        left: 0px
+      }
+      .hover-button[data-id="play"], .material .song-row [data-col="track"] .hover-button[data-id="play"] {
+        background: no-repeat url(sprites.png) -860px 0;
+        width: 48px;
+        height: 48px;
+        background-color: inherit;
+        left: 10px
+      }
+      */
+    </style>
   </head>
   <body>
   <div id="app"></div>
-    <script src="dist/build.js"></script>
+  <script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>
+  <script src="dist/build.js"></script>
   </body>
 </html>
